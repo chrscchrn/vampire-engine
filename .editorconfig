@@ -1,0 +1,24 @@
+# dotnet_diagnostic.<rule ID>.severity = <severity value>
+[*.cs]
+dotnet_diagnostic.IDE0310.severity = none
+dotnet_diagnostic.IDE0031.severity = none
+dotnet_diagnostic.IDE0017.severity = none
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.IDE0055.severity = none
+
+dotnet_diagnostic.IDE1822.severity = none
+dotnet_diagnostic.IDE0160.severity = none
+dotnet_diagnostic.CA1051.severity = none
+dotnet_diagnostic.IDE0074.severity = none
+dotnet_diagnostic.IDE0008.severity = none
+
+dotnet_diagnostic.IDE0130.severity = none
+dotnet_diagnostic.CA1805.severity = none
+dotnet_diagnostic.IDE0025.severity = none
+dotnet_diagnostic.IDE1005.severity = none
+dotnet_diagnostic.IDE0048.severity = none
+dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.IDE0320.severity = none
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1710.severity = none
+
