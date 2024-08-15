@@ -48,14 +48,14 @@ public class Collider
 
     public void Render()
     {
-        Texture2D texture = new Texture2D(Engine.Instance.GraphicsDevice, Width, Height);
+        Texture2D texture = new (Engine.Instance.GraphicsDevice, Width, Height);
         Color[] colors = new Color[Width * Height];
         for (int i = 0; i < Width; i++)
         {
             for (int j = 0; j < Height; j++)
             {
                 if (
-                    (i < Width / Height || (i * Height + j > Width * Height - Width))
+                    i < Width / Height || (i * Height + j > Width * Height - Width)
                     || ((i * Height + j + 1) % Width == 0)
                     || ((i * Height + j) % Width == 0)
                 )
