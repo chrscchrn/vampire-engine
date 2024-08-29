@@ -4,7 +4,6 @@ namespace vampire;
 
 public class CInput
 {
-
     public Axis CreateAxis(Keys one, Keys two)
     {
         return new Axis(one, two);
@@ -36,21 +35,31 @@ public class CInput
         {
             PreviousKeyState.KeyOnePressed = CurrentKeyState.KeyOnePressed;
             PreviousKeyState.KeyTwoPressed = CurrentKeyState.KeyTwoPressed;
-            CurrentKeyState.KeyOnePressed = Keyboard.GetState().IsKeyDown(KeyOne);
-            CurrentKeyState.KeyTwoPressed = Keyboard.GetState().IsKeyDown(KeyTwo);
-            
+            CurrentKeyState.KeyOnePressed = Keyboard
+                .GetState()
+                .IsKeyDown(KeyOne);
+            CurrentKeyState.KeyTwoPressed = Keyboard
+                .GetState()
+                .IsKeyDown(KeyTwo);
+
             if (CurrentKeyState.KeyOnePressed && CurrentKeyState.KeyTwoPressed)
             {
-                if (PreviousKeyState.KeyOnePressed && !PreviousKeyState.KeyTwoPressed)
+                if (
+                    PreviousKeyState.KeyOnePressed
+                    && !PreviousKeyState.KeyTwoPressed
+                )
                 {
                     Value = 1;
-                } 
-                else if (!PreviousKeyState.KeyOnePressed && PreviousKeyState.KeyTwoPressed)
+                }
+                else if (
+                    !PreviousKeyState.KeyOnePressed
+                    && PreviousKeyState.KeyTwoPressed
+                )
                 {
                     Value = -1;
                 }
                 // if prev && prev then keep the value the same
-            } 
+            }
             else if (CurrentKeyState.KeyOnePressed)
             {
                 Value = -1;
@@ -66,4 +75,3 @@ public class CInput
         }
     }
 }
-

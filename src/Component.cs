@@ -1,5 +1,4 @@
-﻿
-namespace vampire;
+﻿namespace vampire;
 
 public class Component
 {

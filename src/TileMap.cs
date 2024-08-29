@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,30 +15,33 @@ public class TileMap : Component
 
     // tile set globals
     private List<Rectangle> textureStore = new();
-    private  string imageFile;
+    private string imageFile;
     private int tileSize;
-    
+
     // tile image globals
     public Texture2D textureAtlas;
-
 
     public TileMap(string tileMapFile)
     {
         LoadTileMapData(tileMapFile);
         LoadTileSetData(tileSetFile);
-        LoadTileImageData(imageFile); 
+        LoadTileImageData(imageFile);
     }
 
     public void LoadTileMapData(string tileMapFile)
     {
-        XmlDocument doc = new ();
+        XmlDocument doc = new();
         doc.Load(Engine.Instance.ContentDirectory + tileMapFile + @".tmx");
         XmlNode mapNode = doc.GetElementsByTagName("map")[0];
-        
+
         if (!int.TryParse(mapNode.Attributes["width"].Value, out int width))
-            throw new XmlException("width not able to be processed in Tilemap.cs");
+            throw new XmlException(
+                "width not able to be processed in Tilemap.cs"
+            );
         if (!int.TryParse(mapNode.Attributes["height"].Value, out int height))
-            throw new XmlException("height not able to be processed in Tilemap.cs");
+            throw new XmlException(
+                "height not able to be processed in Tilemap.cs"
+            );
 
         // Dictionary<Vector2, int> result = new();
         string[] str = Regex.Replace(mapNode.InnerText, @"\s+", "").Split(",");
@@ -48,7 +51,9 @@ public class TileMap : Component
             for (int x = 0; x < width; x++)
             {
                 if (!int.TryParse(str[counter], out int value))
-                    throw new XmlException("MapNode data is not be able to be parsed. Tilemap.cs");
+                    throw new XmlException(
+                        "MapNode data is not be able to be parsed. Tilemap.cs"
+                    );
                 if (value > 0)
                 {
                     tileMap[new Vector2(x, y)] = value;
@@ -56,13 +61,16 @@ public class TileMap : Component
                 counter++;
             }
         }
-        
+
         XmlNode tileSetNode = doc.GetElementsByTagName("tileset")[0];
         var tileSetAttribute = tileSetNode.Attributes["source"];
         if (tileSetAttribute == null)
         {
-            throw new XmlException("TileSet path cannot be found or wasn't loaded properly");
-        } else 
+            throw new XmlException(
+                "TileSet path cannot be found or wasn't loaded properly"
+            );
+        }
+        else
         {
             tileSetFile = tileSetAttribute.Value;
         }
@@ -73,17 +81,45 @@ public class TileMap : Component
         XmlDocument doc = new();
         doc.Load(Engine.Instance.ContentDirectory + tileSetFile);
         XmlNode tileSetNode = doc.GetElementsByTagName("tileset")[0];
-        if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out tileSize))
-            throw new XmlException("tilesize not able to be processed in Tilemap.cs");
-        if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out int tileCount))
-            throw new XmlException("tile count not able to be processed in Tilemap.cs");
-        if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out int columns))
-            throw new XmlException("columns not able to be processed in Tilemap.cs");
+        if (
+            !int.TryParse(
+                tileSetNode.Attributes["tilewidth"].Value,
+                out tileSize
+            )
+        )
+            throw new XmlException(
+                "tilesize not able to be processed in Tilemap.cs"
+            );
+        if (
+            !int.TryParse(
+                tileSetNode.Attributes["tilewidth"].Value,
+                out int tileCount
+            )
+        )
+            throw new XmlException(
+                "tile count not able to be processed in Tilemap.cs"
+            );
+        if (
+            !int.TryParse(
+                tileSetNode.Attributes["tilewidth"].Value,
+                out int columns
+            )
+        )
+            throw new XmlException(
+                "columns not able to be processed in Tilemap.cs"
+            );
         for (int i = 0; i < (tileCount + columns - 1) / columns; i++)
         {
             for (int j = 0; j < columns; j++)
             {
-                textureStore.Add(new Rectangle(j * tileSize, i * tileSize, tileSize, tileSize)); 
+                textureStore.Add(
+                    new Rectangle(
+                        j * tileSize,
+                        i * tileSize,
+                        tileSize,
+                        tileSize
+                    )
+                );
             }
         }
         XmlNode imageNode = doc.GetElementsByTagName("image")[0];
@@ -93,8 +129,10 @@ public class TileMap : Component
     public void LoadTileImageData(string tileImage)
     {
         if (tileImage == null)
-            throw new XmlException("tile image not loaded" );
-        textureAtlas = Engine.Instance.Content.Load<Texture2D>(tileImage.Split('.')[0]); // png
+            throw new XmlException("tile image not loaded");
+        textureAtlas = Engine.Instance.Content.Load<Texture2D>(
+            tileImage.Split('.')[0]
+        ); // png
     }
 
     public override void Render()
@@ -102,9 +140,19 @@ public class TileMap : Component
         foreach (var item in tileMap)
         {
             Rectangle dest =
-                new((int)item.Key.X * tileSize, (int)item.Key.Y * tileSize, tileSize, tileSize);
+                new(
+                    (int)item.Key.X * tileSize,
+                    (int)item.Key.Y * tileSize,
+                    tileSize,
+                    tileSize
+                );
             Rectangle src = textureStore[item.Value - 1];
-            Engine.Instance._spriteBatch.Draw(textureAtlas, dest, src, Color.White);
+            Engine.Instance._spriteBatch.Draw(
+                textureAtlas,
+                dest,
+                src,
+                Color.White
+            );
         }
     }
 }

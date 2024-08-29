@@ -25,7 +25,7 @@ public class Collider
 
     public Vector2 Size
     {
-        get => new (Width, Height);
+        get => new(Width, Height);
         set
         {
             Width = (int)value.X;
@@ -35,7 +35,8 @@ public class Collider
 
     public Rectangle Rectangle
     {
-        get => new ((int)Entity.Position.X, (int)Entity.Position.Y, Width, Height);
+        get =>
+            new((int)Entity.Position.X, (int)Entity.Position.Y, Width, Height);
     }
 
     //public int Left() => (int)Entity.Position.X;
@@ -48,18 +49,21 @@ public class Collider
 
     public void Render()
     {
-        Texture2D texture = new (Engine.Instance.GraphicsDevice, Width, Height);
+        Texture2D texture = new(Engine.Instance.GraphicsDevice, Width, Height);
         Color[] colors = new Color[Width * Height];
         for (int i = 0; i < Width; i++)
         {
             for (int j = 0; j < Height; j++)
             {
                 if (
-                    i < Width / Height || (i * Height + j > Width * Height - Width)
+                    i < Width / Height
+                    || (i * Height + j > Width * Height - Width)
                     || ((i * Height + j + 1) % Width == 0)
                     || ((i * Height + j) % Width == 0)
                 )
-                    colors[i * Height + j] = new Color(new Vector4(10, 79, 79, 0.01f));
+                    colors[i * Height + j] = new Color(
+                        new Vector4(10, 79, 79, 0.01f)
+                    );
             }
         }
         texture.SetData(colors);
