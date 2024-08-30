@@ -84,7 +84,6 @@ public class Collider : Component
         }
         texture.SetData(colors);
         Engine.Instance._spriteBatch.Draw(texture, Rectangle, Color.Red);
-        Console.WriteLine(Offset.ToString());
     }
 
     public bool Check(Vector2 at, Collider other)

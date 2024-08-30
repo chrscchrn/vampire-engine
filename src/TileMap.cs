@@ -10,11 +10,9 @@ public class TileMap : Component
 {
     // tile map globals
     protected Dictionary<Vector2, int> tileMap = new();
-    private string tileSetFile;
 
     // tile set globals
     protected List<Rectangle> textureStore = new();
-    private string imageFile;
     private int tileSize;
 
     // tile image globals
@@ -23,16 +21,11 @@ public class TileMap : Component
     public TileMap(string tileMapFile)
     {
         LoadTileMapData(tileMapFile);
-        LoadTileSetData(tileSetFile);
-        LoadTileImageData(imageFile);
     }
 
     public TileMap(string tileMapFile, bool addColliders)
     {
         LoadTileMapData(tileMapFile);
-        LoadTileSetData(tileSetFile);
-        LoadTileImageData(imageFile);
-
         if (addColliders)
             CreateTileMapColliders();
     }
@@ -40,9 +33,16 @@ public class TileMap : Component
     public void LoadTileMapData(string tileMapFile)
     {
         XmlDocument doc = new();
-        doc.Load(Engine.Instance.ContentDirectory + tileMapFile + @".tmx");
-        XmlNode mapNode = doc.GetElementsByTagName("map")[0];
+        try
+        {
+            doc.Load(Engine.Instance.ContentDirectory + tileMapFile + @".tmx");
+        }
+        catch (XmlException e)
+        {
+            throw new XmlException("TileMap file could not be loaded.\n" + e);
+        }
 
+        XmlNode mapNode = doc.GetElementsByTagName("map")[0];
         if (!int.TryParse(mapNode.Attributes["width"].Value, out int width))
             throw new XmlException("width not able to be processed in Tilemap.cs");
         if (!int.TryParse(mapNode.Attributes["height"].Value, out int height))
@@ -67,31 +67,32 @@ public class TileMap : Component
             }
         }
 
-        XmlNode tileSetNode = doc.GetElementsByTagName("tileset")[0];
-        var tileSetAttribute = tileSetNode.Attributes["source"];
-        if (tileSetAttribute == null)
-        {
-            throw new XmlException(
+        XmlNode tileMapTileSetNode = doc.GetElementsByTagName("tileset")[0];
+        string tileSetFile =
+            tileMapTileSetNode.Attributes["source"].Value
+            ?? throw new XmlException(
                 "TileSet path cannot be found or wasn't loaded properly"
             );
-        }
-        else
-        {
-            tileSetFile = tileSetAttribute.Value;
-        }
-    }
 
-    public void LoadTileSetData(string tileSetFile)
-    {
-        XmlDocument doc = new();
-        doc.Load(Engine.Instance.ContentDirectory + tileSetFile);
-        XmlNode tileSetNode = doc.GetElementsByTagName("tileset")[0];
+        // tile set data
+        XmlDocument tileSetDoc = new();
+        try
+        {
+            tileSetDoc.Load(Engine.Instance.ContentDirectory + tileSetFile);
+        }
+        catch (XmlException e)
+        {
+            throw new XmlException("TileSet File cannot be loaded.\n" + e);
+        }
+
+        XmlNode tileSetNode = tileSetDoc.GetElementsByTagName("tileset")[0];
         if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out tileSize))
             throw new XmlException("tilesize not able to be processed in Tilemap.cs");
         if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out int tileCount))
             throw new XmlException("tile count not able to be processed in Tilemap.cs");
         if (!int.TryParse(tileSetNode.Attributes["tilewidth"].Value, out int columns))
             throw new XmlException("columns not able to be processed in Tilemap.cs");
+
         for (int i = 0; i < (tileCount + columns - 1) / columns; i++)
         {
             for (int j = 0; j < columns; j++)
@@ -101,15 +102,22 @@ public class TileMap : Component
                 );
             }
         }
-        XmlNode imageNode = doc.GetElementsByTagName("image")[0];
-        imageFile = imageNode.Attributes["source"].Value;
-    }
 
-    public void LoadTileImageData(string tileImage)
-    {
-        if (tileImage == null)
-            throw new XmlException("tile image not loaded");
-        textureAtlas = Engine.Instance.Content.Load<Texture2D>(tileImage.Split('.')[0]); // png
+        XmlNode imageNode = tileSetDoc.GetElementsByTagName("image")[0];
+        string imageFile =
+            imageNode.Attributes["source"].Value
+            ?? throw new XmlException("Tile Image data cannot be parsed.");
+
+        try
+        {
+            textureAtlas = Engine.Instance.Content.Load<Texture2D>(
+                imageFile.Split('.')[0]
+            );
+        }
+        catch (XmlException e)
+        {
+            throw new XmlException("File does not exist is filename is incorrect.\n" + e);
+        }
     }
 
     public override void Render()
