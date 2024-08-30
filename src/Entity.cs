@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
@@ -6,23 +7,20 @@ namespace vampire;
 
 public class Entity : IEnumerable<Component>, IEnumerable
 {
-    public Vector2 Position = new(0, 0);
+    private Vector2 _position = new(0, 0);
+    public Vector2 Position
+    {
+        get => _position;
+        set => _position = value;
+    }
+
     public List<Component> components = new();
     public Scene Scene;
 
     public string name;
     public int tag;
 
-    private Collider collider;
-    public Collider Collider
-    {
-        get => collider;
-        set
-        {
-            collider = value;
-            collider.Entity = this;
-        }
-    }
+    public List<Collider> ColliderTracker = new();
 
     public Entity(Vector2 _position)
     {
@@ -49,8 +47,9 @@ public class Entity : IEnumerable<Component>, IEnumerable
     public virtual void Render()
     {
         components.ForEach(c => c.Render());
-        if (Collider != null)
-            Collider.Render();
+        if (ColliderTracker.Count > 0)
+            foreach (var col in ColliderTracker)
+                col.Render();
     }
 
     public void Added(Scene _scene)
@@ -61,7 +60,10 @@ public class Entity : IEnumerable<Component>, IEnumerable
     // cols
     public bool CollideCheck(Entity other)
     {
-        return Collider.Check(Position, other);
+        foreach (Collider collider in ColliderTracker)
+            if (collider.Check(Position, other))
+                return true;
+        return false;
     }
 
     public bool CollideCheck<T>(Vector2 position)
@@ -70,15 +72,18 @@ public class Entity : IEnumerable<Component>, IEnumerable
         // will it collide at this new position
         if (!Scene.Tracker.EntityMap.ContainsKey(typeof(T)))
             return false;
-        return Collider.Check(position, Scene.Tracker.EntityMap[typeof(T)]);
-    }
-
-    public bool CollideCheck<T>()
-        where T : Entity
-    {
-        // is it currently colliding at this position
+        foreach (Collider collider in ColliderTracker)
+            if (collider.Check(position, Scene.Tracker.EntityMap[typeof(T)]))
+                return true;
         return false;
     }
+
+    // public bool CollideCheck<T>()
+    //     where T : Entity
+    // {
+    //     // is it currently colliding at this position
+    //     return false;
+    // }
 
     public T GetComponent<T>()
         where T : Component
@@ -92,9 +97,11 @@ public class Entity : IEnumerable<Component>, IEnumerable
     public T AddComponent<T>()
         where T : Component, new()
     {
-        T component = new T();
+        T component = new();
         components.Add(component);
         component.Added(this);
+        if (typeof(Collider) == typeof(T))
+            ColliderTracker.Add((Collider)(object)component);
         return component;
     }
 
@@ -103,6 +110,8 @@ public class Entity : IEnumerable<Component>, IEnumerable
     {
         components.Add(component);
         component.Added(this);
+        if (component is Collider collider)
+            ColliderTracker.Add(collider);
         return component;
     }
 

@@ -35,25 +35,17 @@ public class CInput
         {
             PreviousKeyState.KeyOnePressed = CurrentKeyState.KeyOnePressed;
             PreviousKeyState.KeyTwoPressed = CurrentKeyState.KeyTwoPressed;
-            CurrentKeyState.KeyOnePressed = Keyboard
-                .GetState()
-                .IsKeyDown(KeyOne);
-            CurrentKeyState.KeyTwoPressed = Keyboard
-                .GetState()
-                .IsKeyDown(KeyTwo);
+            CurrentKeyState.KeyOnePressed = Keyboard.GetState().IsKeyDown(KeyOne);
+            CurrentKeyState.KeyTwoPressed = Keyboard.GetState().IsKeyDown(KeyTwo);
 
             if (CurrentKeyState.KeyOnePressed && CurrentKeyState.KeyTwoPressed)
             {
-                if (
-                    PreviousKeyState.KeyOnePressed
-                    && !PreviousKeyState.KeyTwoPressed
-                )
+                if (PreviousKeyState.KeyOnePressed && !PreviousKeyState.KeyTwoPressed)
                 {
                     Value = 1;
                 }
                 else if (
-                    !PreviousKeyState.KeyOnePressed
-                    && PreviousKeyState.KeyTwoPressed
+                    !PreviousKeyState.KeyOnePressed && PreviousKeyState.KeyTwoPressed
                 )
                 {
                     Value = -1;
