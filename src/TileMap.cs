@@ -9,7 +9,9 @@ namespace vampire;
 public class TileMap : Component
 {
     // tile map globals
-    protected Dictionary<Vector2, int> tileMap = new();
+    private Dictionary<Vector2, int> tileMap = new();
+    private int width;
+    private int height;
 
     // tile set globals
     protected List<Rectangle> textureStore = new();
@@ -43,9 +45,9 @@ public class TileMap : Component
         }
 
         XmlNode mapNode = doc.GetElementsByTagName("map")[0];
-        if (!int.TryParse(mapNode.Attributes["width"].Value, out int width))
+        if (!int.TryParse(mapNode.Attributes["width"].Value, out width))
             throw new XmlException("width not able to be processed in Tilemap.cs");
-        if (!int.TryParse(mapNode.Attributes["height"].Value, out int height))
+        if (!int.TryParse(mapNode.Attributes["height"].Value, out height))
             throw new XmlException("height not able to be processed in Tilemap.cs");
 
         // Dictionary<Vector2, int> result = new();
@@ -131,10 +133,45 @@ public class TileMap : Component
                     tileSize,
                     tileSize
                 );
+            // minus one since 0 is always blank
             Rectangle src = textureStore[item.Value - 1];
             Engine.Instance._spriteBatch.Draw(textureAtlas, dest, src, Color.White);
         }
     }
 
-    public void CreateTileMapColliders() { }
+
+
+    // everything - 0 should be part of a Collider 
+    public void CreateTileMapColliders() 
+    { 
+        List<List<(int, int)>> colInfo = new();
+        for (int row = 0; row < height; row++)
+        {
+            int start;
+            int end;
+            int col = 0;
+            List<(int, int)> rowColInfo = new();
+            while (col < width)
+            {
+                if (tileMap[new Vector2(col, row)] != 0)
+                {
+                    start = col;
+                    end = col;
+                    while (end < width && tileMap[new Vector2(col, height)] != 0)
+                        end++;
+                    rowColInfo.Add((start, end - 1));
+                    col = end - 1;
+                }
+                col++;
+            }
+            colInfo.Add(rowColInfo);
+        }
+
+
+
+    }
 }
+// collider spawn info: size and offset
+// arr index = row num - 1
+// [[col info for row 1][col info for row 2]]
+// offset will be the position since a tilemaps position will (most likely) be zero zero 
