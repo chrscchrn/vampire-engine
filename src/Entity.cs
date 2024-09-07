@@ -47,9 +47,6 @@ public class Entity : IEnumerable<Component>, IEnumerable
     public virtual void Render()
     {
         components.ForEach(c => c.Render());
-        if (ColliderTracker.Count > 0)
-            foreach (var col in ColliderTracker)
-                col.Render();
     }
 
     public void Added(Scene _scene)
@@ -106,7 +103,7 @@ public class Entity : IEnumerable<Component>, IEnumerable
     }
 
     // return types not working
-    public Component AddComponent(Component component)
+    public virtual Component AddComponent(Component component)
     {
         components.Add(component);
         component.Added(this);

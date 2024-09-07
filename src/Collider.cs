@@ -14,9 +14,8 @@ public class Collider : Component
     public Vector2 Position
     {
         get => Entity.Position + Offset;
-        set => Offset = Entity.Position - value;
     }
-    public Vector2 Offset = new(0, 0);
+    public Vector2 Offset;
 
     public int Height { get; private set; }
     public int Width { get; private set; }
@@ -30,6 +29,7 @@ public class Collider : Component
     public Collider(Vector2 size)
     {
         Size = size;
+        Offset = new(0, 0);
     }
 
     public Collider() { }
@@ -41,6 +41,8 @@ public class Collider : Component
         get => new(Width, Height);
         set
         {
+            if (value.X <= 0 || value.Y <= 0)
+                throw new Exception("Collider size must be greater than 0. Collider.Size { }");
             Width = (int)value.X;
             Height = (int)value.Y;
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.Xna.Framework;
@@ -6,10 +7,11 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace vampire;
 
-public class TileMap : Component
+public class TileMap : Entity
 {
     // tile map globals
     private Dictionary<Vector2, int> tileMap = new();
+    private int[,] solids;
     private int width;
     private int height;
 
@@ -60,10 +62,18 @@ public class TileMap : Component
                 if (!int.TryParse(str[counter], out int value))
                     throw new XmlException(
                         "MapNode data is not be able to be parsed. Tilemap.cs"
-                    );
+                        );
+
+                if (solids == null)
+                    solids = new int[width, height];
                 if (value > 0)
                 {
                     tileMap[new Vector2(x, y)] = value;
+                    solids[x, y] = 1;
+                }
+                else
+                {
+                    solids[x, y] = 0;
                 }
                 counter++;
             }
@@ -71,10 +81,10 @@ public class TileMap : Component
 
         XmlNode tileMapTileSetNode = doc.GetElementsByTagName("tileset")[0];
         string tileSetFile =
-            tileMapTileSetNode.Attributes["source"].Value
-            ?? throw new XmlException(
-                "TileSet path cannot be found or wasn't loaded properly"
-            );
+          tileMapTileSetNode.Attributes["source"].Value
+          ?? throw new XmlException(
+              "TileSet path cannot be found or wasn't loaded properly"
+              );
 
         // tile set data
         XmlDocument tileSetDoc = new();
@@ -101,20 +111,20 @@ public class TileMap : Component
             {
                 textureStore.Add(
                     new Rectangle(j * tileSize, i * tileSize, tileSize, tileSize)
-                );
+                    );
             }
         }
 
         XmlNode imageNode = tileSetDoc.GetElementsByTagName("image")[0];
         string imageFile =
-            imageNode.Attributes["source"].Value
-            ?? throw new XmlException("Tile Image data cannot be parsed.");
+          imageNode.Attributes["source"].Value
+          ?? throw new XmlException("Tile Image data cannot be parsed.");
 
         try
         {
             textureAtlas = Engine.Instance.Content.Load<Texture2D>(
                 imageFile.Split('.')[0]
-            );
+                );
         }
         catch (XmlException e)
         {
@@ -127,48 +137,88 @@ public class TileMap : Component
         foreach (var item in tileMap)
         {
             Rectangle dest =
-                new(
-                    (int)item.Key.X * tileSize,
-                    (int)item.Key.Y * tileSize,
-                    tileSize,
-                    tileSize
-                );
+              new(
+                  (int)item.Key.X * tileSize,
+                  (int)item.Key.Y * tileSize,
+                  tileSize,
+                  tileSize
+                 );
             // minus one since 0 is always blank
             Rectangle src = textureStore[item.Value - 1];
             Engine.Instance._spriteBatch.Draw(textureAtlas, dest, src, Color.White);
         }
+        base.Render();
     }
 
 
 
     // everything - 0 should be part of a Collider 
-    public void CreateTileMapColliders() 
-    { 
-        List<List<(int, int)>> colInfo = new();
-        for (int row = 0; row < height; row++)
+    public void CreateTileMapColliders()
+    {
+        for (int i = 0; i < height; i++)
         {
-            int start;
-            int end;
-            int col = 0;
-            List<(int, int)> rowColInfo = new();
-            while (col < width)
+            Console.Write("\n");
+            for (int j = 0; j < width; j++)
             {
-                if (tileMap[new Vector2(col, row)] != 0)
-                {
-                    start = col;
-                    end = col;
-                    while (end < width && tileMap[new Vector2(col, height)] != 0)
-                        end++;
-                    rowColInfo.Add((start, end - 1));
-                    col = end - 1;
-                }
-                col++;
+                Console.Write(solids[j, i]);
             }
-            colInfo.Add(rowColInfo);
         }
 
+        Dictionary<int, List<(int, int)>> colliderSpawnInfo = new();
+        for (int row = 0; row < height; row++)
+        {
+            for (int col = 0; col < width; col++)
+            {
+                int colliderXStart;
+                int colliderWidth = 0;
+                if (solids[col, row] == 0)
+                    continue;
+                colliderXStart = col;
+                while (col < solids.GetLength(0) && row < solids.GetLength(1) && solids[col, row] == 1)
+                {
+                    col++;
+                    colliderWidth++;
+                }
+                if (colliderWidth > 0)
+                {
+                    if (!colliderSpawnInfo.ContainsKey(row))
+                        colliderSpawnInfo[row] = new();
+                    colliderSpawnInfo[row].Add((colliderXStart, colliderWidth));
+                }
+            }
+        }
+        Console.Write("\n");
+        for (int row = 0; row < height; row++)
+        {
+            Console.WriteLine("Row: " + row.ToString());
+            if (colliderSpawnInfo.ContainsKey(row))
+            {
+                colliderSpawnInfo[row].ForEach(action =>
+                {
+                    Console.WriteLine("Start: " + action.Item1.ToString() + ", Width: " + action.Item2.ToString());
+                });
+            }
+            if (!colliderSpawnInfo.ContainsKey(row) || colliderSpawnInfo[row].Count == 0)
+                continue;
+            foreach ((int, int) startXWidth in colliderSpawnInfo[row])
+            {
+                Vector2 size = new(startXWidth.Item2 * tileSize, tileSize);
+                Console.WriteLine("Size: " + size.ToString());
+                Vector2 offset = new(startXWidth.Item1 * tileSize, row * tileSize / 2);
+                Console.WriteLine("Offset: " + offset.ToString());
 
+                AddComponent(new Collider(size, offset));
+            }
+            Console.WriteLine("--------------------------------------------------");
+        }
+        Console.WriteLine("Position: " + Position.ToString());
+    }
 
+    public override Component AddComponent(Component component)
+    {
+        if (component.GetType() == typeof(SpriteRenderer))
+            throw new Exception("Cannot add a Sprite Renderer to a TileMap Entity");
+        return base.AddComponent(component);
     }
 }
 // collider spawn info: size and offset
