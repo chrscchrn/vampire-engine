@@ -1,33 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace vampire;
 
-public class Collider
+public class Collider : Component
 {
-    public Entity Entity;
+    // Component Props:
+    // Entity
+    // isActive
+    // Entity.Position is available
     public Vector2 Position
     {
-        get => Entity.Position;
+        get => Entity.Position + Offset;
     }
+    public Vector2 Offset;
+
     public int Height { get; private set; }
     public int Width { get; private set; }
+
+    public Collider(Vector2 size, Vector2 offset)
+    {
+        Size = size;
+        Offset = offset;
+    }
 
     public Collider(Vector2 size)
     {
         Size = size;
+        Offset = new(0, 0);
     }
 
     public Collider() { }
 
-    public void Collide() { }
+    // public void Collide() { }
 
     public Vector2 Size
     {
         get => new(Width, Height);
         set
         {
+            if (value.X <= 0 || value.Y <= 0)
+                throw new Exception("Collider size must be greater than 0. Collider.Size { }");
             Width = (int)value.X;
             Height = (int)value.Y;
         }
@@ -36,18 +51,23 @@ public class Collider
     public Rectangle Rectangle
     {
         get =>
-            new((int)Entity.Position.X, (int)Entity.Position.Y, Width, Height);
+            new(
+                (int)Position.X,
+                (int)Position.Y,
+                Width,
+                Height
+            );
     }
 
-    //public int Left() => (int)Entity.Position.X;
+    public int Left() => (int)Entity.Position.X + (int)Offset.X;
 
-    //public int Right() => (int)Entity.Position.X + Width - 1;
+    public int Right() => (int)Entity.Position.X + Width - 1 + (int)Offset.X;
 
-    //public int Top() => (int)Entity.Position.Y;
+    public int Top() => (int)Entity.Position.Y + (int)Offset.Y;
 
-    //public int Bottom() => (int)Entity.Position.Y + Height - 1;
+    public int Bottom() => (int)Entity.Position.Y + Height - 1 + (int)Offset.Y;
 
-    public void Render()
+    public override void Render()
     {
         Texture2D texture = new(Engine.Instance.GraphicsDevice, Width, Height);
         Color[] colors = new Color[Width * Height];
@@ -61,27 +81,42 @@ public class Collider
                     || ((i * Height + j + 1) % Width == 0)
                     || ((i * Height + j) % Width == 0)
                 )
-                    colors[i * Height + j] = new Color(
-                        new Vector4(10, 79, 79, 0.01f)
-                    );
+                    colors[i * Height + j] = new Color(new Vector4(255, 0, 0, .5f));
+
             }
         }
         texture.SetData(colors);
         Engine.Instance._spriteBatch.Draw(texture, Rectangle, Color.Red);
     }
 
-    public bool Check(Vector2 at, Entity other)
+    public bool Check(Vector2 at, Collider other)
     {
-        return at.X < other.Position.X + other.Collider.Width
+        return at.X < other.Position.X + other.Width
             && at.X + Width > other.Position.X
-            && at.Y < other.Position.Y + other.Collider.Height
+            && at.Y < other.Position.Y + other.Height
             && at.Y + Height > other.Position.Y;
     }
 
-    public bool Check(Vector2 at, IEnumerable<Entity> others)
+    public bool Check(Vector2 at, IEnumerable<Collider> others)
     {
-        foreach (Entity other in others)
-            if (Check(at, other))
+        foreach (Collider col in others)
+            if (Check(at, col))
+                return true;
+        return false;
+    }
+
+    public bool Check(Vector2 at, Entity entity)
+    {
+        foreach (Collider col in entity.ColliderTracker)
+            if (Check(at, col))
+                return true;
+        return false;
+    }
+
+    public bool Check(Vector2 at, IEnumerable<Entity> entities)
+    {
+        foreach (Entity entity in entities)
+            if (Check(at, entity))
                 return true;
         return false;
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace vampire;
@@ -74,6 +75,8 @@ public class Scene : IEnumerable<Entity>, IEnumerable
         return GetEnumerator();
     }
 }
+
+
 /*
 hashmap with all alive tags and values, integrate with entity list. Simliar to the browser history problem from Bloomberg interview
 

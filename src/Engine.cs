@@ -18,13 +18,7 @@ public class Engine : Game
     );
     public string ContentDirectory
     {
-        get
-        {
-            return Path.Combine(
-                AssemblyDirectory,
-                Instance.Content.RootDirectory
-            );
-        }
+        get { return Path.Combine(AssemblyDirectory, Instance.Content.RootDirectory); }
     }
 
     private Scene currentScene;
@@ -36,7 +30,7 @@ public class Engine : Game
         _graphics = new GraphicsDeviceManager(this);
         _graphics.PreferredBackBufferWidth = 1920;
         _graphics.PreferredBackBufferHeight = 1080;
-        _graphics.IsFullScreen = false;
+        _graphics.IsFullScreen = true;
         Content.RootDirectory = @"Content/";
         IsMouseVisible = true;
     }
@@ -49,14 +43,12 @@ public class Engine : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        // nextScene = new Chandula();
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (
-            GamePad.GetState(PlayerIndex.One).Buttons.Back
-                == ButtonState.Pressed
+            GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed
             || Keyboard.GetState().IsKeyDown(Keys.Escape)
         )
             Exit();
