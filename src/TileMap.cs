@@ -204,7 +204,7 @@ public class TileMap : Entity
             {
                 Vector2 size = new(startXWidth.Item2 * tileSize, tileSize);
                 Console.WriteLine("Size: " + size.ToString());
-                Vector2 offset = new(startXWidth.Item1 * tileSize, row * tileSize / 2);
+                Vector2 offset = new(startXWidth.Item1 * tileSize, row * tileSize);
                 Console.WriteLine("Offset: " + offset.ToString());
 
                 AddComponent(new Collider(size, offset));

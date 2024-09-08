@@ -52,8 +52,8 @@ public class Collider : Component
     {
         get =>
             new(
-                (int)Position.X + (int)Offset.X,
-                (int)Position.Y + (int)Offset.Y,
+                (int)Position.X,
+                (int)Position.Y,
                 Width,
                 Height
             );
