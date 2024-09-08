@@ -52,7 +52,6 @@ public class TileMap : Entity
         if (!int.TryParse(mapNode.Attributes["height"].Value, out height))
             throw new XmlException("height not able to be processed in Tilemap.cs");
 
-        // Dictionary<Vector2, int> result = new();
         string[] str = Regex.Replace(mapNode.InnerText, @"\s+", "").Split(",");
         int counter = 0;
         for (int y = 0; y < height; y++)
@@ -63,7 +62,6 @@ public class TileMap : Entity
                     throw new XmlException(
                         "MapNode data is not be able to be parsed. Tilemap.cs"
                         );
-
                 if (solids == null)
                     solids = new int[width, height];
                 if (value > 0)
@@ -155,6 +153,7 @@ public class TileMap : Entity
     // everything - 0 should be part of a Collider 
     public void CreateTileMapColliders()
     {
+        // visualize collider map
         for (int i = 0; i < height; i++)
         {
             Console.Write("\n");
@@ -187,31 +186,18 @@ public class TileMap : Entity
                 }
             }
         }
-        Console.Write("\n");
         for (int row = 0; row < height; row++)
         {
-            Console.WriteLine("Row: " + row.ToString());
-            if (colliderSpawnInfo.ContainsKey(row))
-            {
-                colliderSpawnInfo[row].ForEach(action =>
-                {
-                    Console.WriteLine("Start: " + action.Item1.ToString() + ", Width: " + action.Item2.ToString());
-                });
-            }
             if (!colliderSpawnInfo.ContainsKey(row) || colliderSpawnInfo[row].Count == 0)
                 continue;
             foreach ((int, int) startXWidth in colliderSpawnInfo[row])
             {
                 Vector2 size = new(startXWidth.Item2 * tileSize, tileSize);
-                Console.WriteLine("Size: " + size.ToString());
                 Vector2 offset = new(startXWidth.Item1 * tileSize, row * tileSize);
-                Console.WriteLine("Offset: " + offset.ToString());
 
                 AddComponent(new Collider(size, offset));
             }
-            Console.WriteLine("--------------------------------------------------");
         }
-        Console.WriteLine("Position: " + Position.ToString());
     }
 
     public override Component AddComponent(Component component)
@@ -221,7 +207,4 @@ public class TileMap : Entity
         return base.AddComponent(component);
     }
 }
-// collider spawn info: size and offset
-// arr index = row num - 1
-// [[col info for row 1][col info for row 2]]
-// offset will be the position since a tilemaps position will (most likely) be zero zero 
+

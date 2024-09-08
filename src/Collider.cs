@@ -81,7 +81,8 @@ public class Collider : Component
                     || ((i * Height + j + 1) % Width == 0)
                     || ((i * Height + j) % Width == 0)
                 )
-                    colors[i * Height + j] = new Color(new Vector4(10, 79, 79, 0.01f));
+                    colors[i * Height + j] = new Color(new Vector4(255, 0, 0, .5f));
+
             }
         }
         texture.SetData(colors);
