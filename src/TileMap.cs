@@ -162,6 +162,7 @@ public class TileMap : Entity
                 Console.Write(solids[j, i]);
             }
         }
+        Console.Write("\n");
 
         Dictionary<int, List<(int, int)>> colliderSpawnInfo = new();
         for (int row = 0; row < height; row++)

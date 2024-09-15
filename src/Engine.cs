@@ -30,7 +30,7 @@ public class Engine : Game
         _graphics = new GraphicsDeviceManager(this);
         _graphics.PreferredBackBufferWidth = 1920;
         _graphics.PreferredBackBufferHeight = 1080;
-        _graphics.IsFullScreen = true;
+        _graphics.IsFullScreen = false;
         Content.RootDirectory = @"Content/";
         IsMouseVisible = true;
     }
@@ -82,6 +82,7 @@ public class Engine : Game
         if (currentScene != null)
         {
             currentScene.Render();
+            currentScene.DebugRender();
         }
         _spriteBatch.End();
 

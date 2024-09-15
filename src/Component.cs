@@ -26,6 +26,8 @@ public class Component
 
     public virtual void Render() { }
 
+    public virtual void DebugRender() { }
+
     public void Added(Entity entity)
     {
         Entity = entity;

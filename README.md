@@ -7,12 +7,14 @@
 
 ### TODO:
 
- 1. Entity.ColliderTracker
-    && Entity.AddComponent(new Collider(size, position))
-    && Collider.Position
-    && Entity.CollideCheck<Solid>(at)
+  1. ~~Entity.ColliderTracker~~
+    ~~&& Entity.AddComponent(new Collider(size, position))~~
+    ~~&& Collider.Position~~
+    ~~&& Entity.CollideCheck<Solid>(at)~~
 
- 2. TileMap.AddColliders()
+  2. ~~TileMap.AddColliders()~~
+
+  3. Spatial Hash
 
 
 ### Program.cs

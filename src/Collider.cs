@@ -48,26 +48,17 @@ public class Collider : Component
         }
     }
 
-    public Rectangle Rectangle
-    {
-        get =>
-            new(
-                (int)Position.X,
-                (int)Position.Y,
-                Width,
-                Height
-            );
-    }
+    public Rectangle Rectangle => new((int)Position.X, (int)Position.Y, Width, Height);
 
-    public int Left() => (int)Entity.Position.X + (int)Offset.X;
+    public int Left => (int)Entity.Position.X + (int)Offset.X;
 
-    public int Right() => (int)Entity.Position.X + Width - 1 + (int)Offset.X;
+    public int Right => (int)Entity.Position.X + Width - 1 + (int)Offset.X;
 
-    public int Top() => (int)Entity.Position.Y + (int)Offset.Y;
+    public int Top => (int)Entity.Position.Y + (int)Offset.Y;
 
-    public int Bottom() => (int)Entity.Position.Y + Height - 1 + (int)Offset.Y;
+    public int Bottom => (int)Entity.Position.Y + Height - 1 + (int)Offset.Y;
 
-    public override void Render()
+    public override void DebugRender()
     {
         Texture2D texture = new(Engine.Instance.GraphicsDevice, Width, Height);
         Color[] colors = new Color[Width * Height];
@@ -89,12 +80,21 @@ public class Collider : Component
         Engine.Instance._spriteBatch.Draw(texture, Rectangle, Color.Red);
     }
 
+    public bool Testing(Vector2 at, Collider other)
+    {
+        return Left < other.Right
+            && Right > other.Left
+            && Top < other.Bottom
+            && Bottom > other.Top;
+    }
+
     public bool Check(Vector2 at, Collider other)
     {
-        return at.X < other.Position.X + other.Width
-            && at.X + Width > other.Position.X
-            && at.Y < other.Position.Y + other.Height
-            && at.Y + Height > other.Position.Y;
+        Vector2 baseColNewPos = Position + Entity.Position - at;
+        return baseColNewPos.X < other.Position.X + other.Width
+            && baseColNewPos.X + Width > other.Position.X
+            && baseColNewPos.Y < other.Position.Y + other.Height
+            && baseColNewPos.Y + Height > other.Position.Y;
     }
 
     public bool Check(Vector2 at, IEnumerable<Collider> others)

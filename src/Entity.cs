@@ -49,6 +49,11 @@ public class Entity : IEnumerable<Component>, IEnumerable
         components.ForEach(c => c.Render());
     }
 
+    public virtual void DebugRender()
+    {
+        components.ForEach(c => c.DebugRender());
+    }
+
     public void Added(Scene _scene)
     {
         Scene = _scene;
