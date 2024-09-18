@@ -34,6 +34,11 @@ public class Scene : IEnumerable<Entity>, IEnumerable
         entities.ForEach(e => e.Render());
     }
 
+    public virtual void DebugRender()
+    {
+        entities.ForEach(e => e.DebugRender());
+    }
+
     public void Destroy() { }
 
     public void AddEntity(Entity entity)

@@ -49,7 +49,6 @@ public class Engine : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        // nextScene = new Chandula();
     }
 
     protected override void Update(GameTime gameTime)
@@ -90,6 +89,8 @@ public class Engine : Game
         if (currentScene != null)
         {
             currentScene.Render();
+            if (Environment.GetEnvironmentVariable("DEBUG_RENDER") == "true")
+                currentScene.DebugRender();
         }
         _spriteBatch.End();
 

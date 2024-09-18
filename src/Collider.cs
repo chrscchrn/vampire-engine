@@ -6,22 +6,28 @@ namespace vampire;
 
 public class Collider
 {
-    public Entity Entity;
-    public Vector2 Position
-    {
-        get => Entity.Position;
-    }
+
     public int Height { get; private set; }
     public int Width { get; private set; }
+
+    public Vector2 Offset { get; set; }
+    public Entity Entity { get; set; }
+    public Vector2 Position
+    {
+        get => Entity.Position + Offset;
+    }
+
+    public Collider(Vector2 size, Vector2 offset)
+    {
+        Size = size;
+        Offset = offset;
+    }
 
     public Collider(Vector2 size)
     {
         Size = size;
+        Offset = Vector2.Zero;
     }
-
-    public Collider() { }
-
-    public void Collide() { }
 
     public Vector2 Size
     {
@@ -36,18 +42,18 @@ public class Collider
     public Rectangle Rectangle
     {
         get =>
-            new((int)Entity.Position.X, (int)Entity.Position.Y, Width, Height);
+            new((int)Position.X, (int)Position.Y, Width, Height);
     }
 
-    //public int Left() => (int)Entity.Position.X;
+    public int Left() => (int)Position.X;
 
-    //public int Right() => (int)Entity.Position.X + Width - 1;
+    public int Right() => (int)Position.X + Width - 1;
 
-    //public int Top() => (int)Entity.Position.Y;
+    public int Top() => (int)Position.Y;
 
-    //public int Bottom() => (int)Entity.Position.Y + Height - 1;
+    public int Bottom() => (int)Position.Y + Height - 1;
 
-    public void Render()
+    public void DebugRender()
     {
         Texture2D texture = new(Engine.Instance.GraphicsDevice, Width, Height);
         Color[] colors = new Color[Width * Height];
@@ -85,4 +91,7 @@ public class Collider
                 return true;
         return false;
     }
+
+    public void Collide() { }
+
 }

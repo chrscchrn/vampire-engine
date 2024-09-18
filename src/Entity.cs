@@ -49,8 +49,11 @@ public class Entity : IEnumerable<Component>, IEnumerable
     public virtual void Render()
     {
         components.ForEach(c => c.Render());
-        if (Collider != null)
-            Collider.Render();
+    }
+
+    public virtual void DebugRender()
+    {
+        components.ForEach(c => c.DebugRender());
     }
 
     public void Added(Scene _scene)
