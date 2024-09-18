@@ -11,14 +11,15 @@ public class Collider : Component
     // Entity
     // isActive
     // Entity.Position is available
+
+    public int Height { get; private set; }
+    public int Width { get; private set; }
+
+    public Vector2 Offset;
     public Vector2 Position
     {
         get => Entity.Position + Offset;
     }
-    public Vector2 Offset;
-
-    public int Height { get; private set; }
-    public int Width { get; private set; }
 
     public Collider(Vector2 size, Vector2 offset)
     {
@@ -33,8 +34,6 @@ public class Collider : Component
     }
 
     public Collider() { }
-
-    // public void Collide() { }
 
     public Vector2 Size
     {
