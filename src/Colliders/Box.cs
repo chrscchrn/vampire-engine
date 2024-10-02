@@ -81,10 +81,23 @@ public class Box : Collider
 
     public override bool Check(Vector2 at, Entity other)
     {
-        return at.X < other.Position.X + other.Collider.Width
-            && at.X + Width > other.Position.X
-            && at.Y < other.Position.Y + other.Collider.Height
-            && at.Y + Height > other.Position.Y;
+        // check the type of Collider
+        if (other.Collider is Box)
+        {
+            return at.X < other.Position.X + other.Collider.Width
+                && at.X + Width > other.Position.X
+                && at.Y < other.Position.Y + other.Collider.Height
+                && at.Y + Height > other.Position.Y;
+        }
+        else if (other.Collider is TileCollider)
+        {
+            /*return other.Collider.Check(Entity, at);*/
+            // need a switch or something to organize the diff types of cols
+        }
+        else
+        {
+            throw new System.NotImplementedException();
+        }
     }
 
     public override bool Check(Vector2 at, IEnumerable<Entity> others)
