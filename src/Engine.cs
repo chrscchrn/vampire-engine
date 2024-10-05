@@ -89,8 +89,8 @@ public class Engine : Game
         if (currentScene != null)
         {
             currentScene.Render();
-            if (Environment.GetEnvironmentVariable("DEBUG_RENDER") == "true")
-                currentScene.DebugRender();
+            /*if (Environment.GetEnvironmentVariable("DEBUG_RENDER") == "true")*/
+            currentScene.DebugRender();
         }
         _spriteBatch.End();
 

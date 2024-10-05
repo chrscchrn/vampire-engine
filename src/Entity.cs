@@ -54,6 +54,8 @@ public class Entity : IEnumerable<Component>, IEnumerable
     public virtual void DebugRender()
     {
         components.ForEach(c => c.DebugRender());
+        if (Collider != null)
+            Collider.DebugRender();
     }
 
     public void Added(Scene _scene)
@@ -64,7 +66,12 @@ public class Entity : IEnumerable<Component>, IEnumerable
     // cols
     public bool CollideCheck(Entity other)
     {
-        return Collider.Check(Position, other);
+        return Collide.Check(this, other);
+    }
+
+    public bool CollideCheck(Vector2 position, Entity other)
+    {
+        return Collide.Check(this, position, other);
     }
 
     public bool CollideCheck<T>(Vector2 position)
@@ -73,14 +80,15 @@ public class Entity : IEnumerable<Component>, IEnumerable
         // will it collide at this new position
         if (!Scene.Tracker.EntityMap.ContainsKey(typeof(T)))
             return false;
-        return Collider.Check(position, Scene.Tracker.EntityMap[typeof(T)]);
+        return Collide.Check(this, position, Scene.Tracker.EntityMap[typeof(T)]);
     }
 
     public bool CollideCheck<T>()
         where T : Entity
     {
-        // is it currently colliding at this position
-        return false;
+        if (!Scene.Tracker.EntityMap.ContainsKey(typeof(T)))
+            return false;
+        return Collide.Check(this, Scene.Tracker.EntityMap[typeof(T)]);
     }
 
     public T GetComponent<T>()

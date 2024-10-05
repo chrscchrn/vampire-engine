@@ -1,6 +1,5 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
 
 namespace vampire;
 
@@ -8,8 +7,8 @@ public class Box : Collider
 {
     public Box(Vector2 size)
     {
-        Height = (int)size.Y;
         Width = (int)size.X;
+        Height = (int)size.Y;
     }
 
     private int width;
@@ -29,30 +28,31 @@ public class Box : Collider
 
     public override int Top
     {
-        get => (int)RelativePosition.X;
-        set => RelativePosition = new(RelativePosition.X, value);
+        get => (int)Position.Y;
+        set => Position = new(Position.Y, value);
     }
 
     public override int Bottom
     {
-        get => (int)RelativePosition.X + Height;
-        set => RelativePosition = new(RelativePosition.X, value - Height);
+        get => (int)Position.Y + Height;
+        set => Position = new(Position.Y, value - Height);
     }
 
     public override int Left
     {
-        get => (int)RelativePosition.Y;
-        set => RelativePosition = new(value, RelativePosition.Y);
+        get => (int)Position.X;
+        set => Position = new(value, Position.X);
     }
 
     public override int Right
     {
-        get => (int)RelativePosition.Y + Width;
-        set => RelativePosition = new(value - Width, RelativePosition.Y);
+        get => (int)Position.X + Width;
+        set => Position = new(value - Width, Position.X);
     }
 
 
 
+    // make a hollow rect drawer
     public override void DebugRender()
     {
         Texture2D texture = new(Engine.Instance.GraphicsDevice, Width, Height);
@@ -79,32 +79,16 @@ public class Box : Collider
         Engine.Instance._spriteBatch.Draw(texture, Bounds, Color.Red);
     }
 
-    public override bool Check(Vector2 at, Entity other)
+    public override bool Collide(Box other)
     {
-        // check the type of Collider
-        if (other.Collider is Box)
-        {
-            return at.X < other.Position.X + other.Collider.Width
-                && at.X + Width > other.Position.X
-                && at.Y < other.Position.Y + other.Collider.Height
-                && at.Y + Height > other.Position.Y;
-        }
-        else if (other.Collider is TileCollider)
-        {
-            /*return other.Collider.Check(Entity, at);*/
-            // need a switch or something to organize the diff types of cols
-        }
-        else
-        {
-            throw new System.NotImplementedException();
-        }
+        return Left < other.Right
+            && Right > other.Left
+            && Top < other.Bottom
+            && Bottom > other.Top;
     }
 
-    public override bool Check(Vector2 at, IEnumerable<Entity> others)
+    public override bool Collide(TileCollider other)
     {
-        foreach (Entity other in others)
-            if (Check(at, other))
-                return true;
-        return false;
+        return other.Collide(this);
     }
 }

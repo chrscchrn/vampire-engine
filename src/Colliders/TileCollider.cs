@@ -1,8 +1,5 @@
-
-/*using System.Collections.Generic;*/
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-/*using Microsoft.Xna.Framework.Graphics;*/
 
 namespace vampire;
 // only needs to be the size of the screen resolution before scaling
@@ -20,8 +17,11 @@ public class TileCollider : Collider
     {
         Height = (int)size.Y;
         Width = (int)size.X;
-
+        if (Entity.GetComponent<TileMap> != null)
+            LoadMapData();
     }
+
+    public bool[,] map;
 
     private int height;
     private int width;
@@ -40,26 +40,35 @@ public class TileCollider : Collider
 
     public override int Top
     {
-        get => (int)RelativePosition.X;
-        set => RelativePosition = new(RelativePosition.X, value);
+        get => (int)Position.X;
+        set => Position = new(Position.X, value);
     }
 
     public override int Bottom
     {
-        get => (int)RelativePosition.X + Height;
-        set => RelativePosition = new(RelativePosition.X, value - Height);
+        get => (int)Position.X + Height;
+        set => Position = new(Position.X, value - Height);
     }
 
     public override int Left
     {
-        get => (int)RelativePosition.Y;
-        set => RelativePosition = new(value, RelativePosition.Y);
+        get => (int)Position.Y;
+        set => Position = new(value, Position.Y);
     }
 
     public override int Right
     {
-        get => (int)RelativePosition.Y + Width;
-        set => RelativePosition = new(value - Width, RelativePosition.Y);
+        get => (int)Position.Y + Width;
+        set => Position = new(value - Width, Position.Y);
+    }
+
+    public void LoadMapData()
+    {
+
+        TileMap tileMap = Entity.GetComponent<TileMap>();
+        map = new bool[tileMap.prescaledPixelWidth, tileMap.prescaledPixelHeight];
+
+
     }
 
     public override void DebugRender()
@@ -82,12 +91,12 @@ public class TileCollider : Collider
     /*    return true;*/
     /*}*/
 
-    public override bool Check(Vector2 at, Entity other)
+    public override bool Collide(Box box)
     {
         throw new System.NotImplementedException();
     }
 
-    public override bool Check(Vector2 at, IEnumerable<Entity> others)
+    public override bool Collide(TileCollider tileCollider)
     {
         throw new System.NotImplementedException();
     }

@@ -8,6 +8,9 @@ namespace vampire;
 
 public class TileMap : Component
 {
+    public int prescaledPixelHeight;
+    public int prescaledPixelWidth;
+
     // tile map globals
     private Dictionary<Vector2, int> tileMap = new();
     private string tileSetFile;
@@ -41,6 +44,13 @@ public class TileMap : Component
             throw new XmlException(
                 "height not able to be processed in Tilemap.cs"
             );
+        if (!int.TryParse(mapNode.Attributes["tileheight"].Value, out int tileSize))
+            throw new XmlException(
+                "tilesize not able to be processed in Tilemapl.cs"
+            );
+
+        prescaledPixelWidth = width * tileSize;
+        prescaledPixelHeight = height * tileSize;
 
         // Dictionary<Vector2, int> result = new();
         string[] str = Regex.Replace(mapNode.InnerText, @"\s+", "").Split(",");

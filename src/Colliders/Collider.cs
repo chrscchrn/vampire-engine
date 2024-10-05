@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using System.Collections.Generic;
 
 namespace vampire;
 
@@ -7,8 +6,18 @@ public abstract class Collider
 {
 
     public Entity Entity { get; set; }
-    public Vector2 RelativePosition { get; set; }
-    public Vector2 AbsolutePosition { get; set; }
+    public Vector2 Position
+    {
+        get
+        {
+            return Entity.Position + Offset;
+        }
+        set
+        {
+            throw new System.Exception("Don't set colliders position, use offset bc I am lazy");
+        }
+    }
+    public Vector2 Offset = Vector2.Zero;
 
     internal virtual void Added(Entity entity)
     {
@@ -27,8 +36,29 @@ public abstract class Collider
     public abstract int Bottom { get; set; }
     public abstract int Left { get; set; }
     public abstract int Right { get; set; }
-    public abstract bool Check(Vector2 at, Entity other);
-    public abstract bool Check(Vector2 at, IEnumerable<Entity> others);
+    public abstract bool Collide(Box box);
+    public abstract bool Collide(TileCollider tileCollider);
+
+    public bool Collide(Entity entity)
+    {
+        return Collide(entity.Collider);
+    }
+
+    public bool Collide(Collider collider)
+    {
+        if (collider is Box)
+        {
+            return Collide(collider as Box);
+        }
+        else if (collider is TileCollider)
+        {
+            return Collide(collider as TileCollider);
+        }
+        else
+        {
+            throw new System.Exception("Collisions against the collider type are not allowed");
+        }
+    }
 
     public Vector2 Size
     {
@@ -37,6 +67,6 @@ public abstract class Collider
 
     public Rectangle Bounds
     {
-        get => new Rectangle(Left, Right, Width, Height);
+        get => new Rectangle(Left, Top, Width, Height);
     }
 }
