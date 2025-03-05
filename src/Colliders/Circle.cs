@@ -57,9 +57,15 @@ public class Circle : Collider
     Color[] colors = new Color[Width * Height];
 
     for (int y = -Radius; y <= Radius; y++)
+    {
+      System.Console.Write('\n');
       for (int x = -Radius; x <= Radius; x++)
+      {
+        System.Console.Write(Math.Sqrt(x * x + y * y).ToString() + '|');
         if (Math.Sqrt(x * x + y * y) <= Radius)
-          colors[x * Radius + y] = Color.Cyan;
+          colors[(x + Radius) + Radius * (y + Radius)] = Color.Cyan;
+      }
+    }
 
     texture.SetData(colors);
     Engine.Instance._spriteBatch.Draw(texture, Bounds, Color.Red);
