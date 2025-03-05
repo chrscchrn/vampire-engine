@@ -5,68 +5,73 @@ namespace vampire;
 public abstract class Collider
 {
 
-  public Entity Entity { get; set; }
-  public Vector2 Position
-  {
-    get
+    public Entity Entity { get; set; }
+    public Vector2 Position
     {
-      return Entity.Position + Offset;
+        get
+        {
+            return Entity.Position + Offset;
+        }
+        set
+        {
+            throw new System.Exception("Don't set colliders position, use offset bc I am lazy");
+        }
     }
-    set
+    public Vector2 Offset = Vector2.Zero;
+
+    internal virtual void Added(Entity entity)
     {
-      throw new System.Exception("Don't set colliders position, use offset bc I am lazy");
+        Entity = entity;
     }
-  }
-  public Vector2 Offset = Vector2.Zero;
 
-  internal virtual void Added(Entity entity)
-  {
-    Entity = entity;
-  }
-
-  internal virtual void Removed(Entity entity)
-  {
-    Entity = null;
-  }
-
-  public abstract void DebugRender();
-  public abstract int Width { get; set; }
-  public abstract int Height { get; set; }
-  public abstract int Top { get; set; }
-  public abstract int Bottom { get; set; }
-  public abstract int Left { get; set; }
-  public abstract int Right { get; set; }
-  public abstract bool Collide(Box box);
-  public abstract bool Collide(TileCollider tileCollider);
-
-  public bool Collide(Entity entity)
-  {
-    return Collide(entity.Collider);
-  }
-
-  public bool Collide(Collider collider)
-  {
-    if (collider is Box)
+    internal virtual void Removed(Entity entity)
     {
-      return Collide(collider as Box);
+        Entity = null;
     }
-    else if (collider is TileCollider)
-    {
-      return Collide(collider as TileCollider);
-    }
-    else
-    {
-      throw new System.Exception("Collisions against the collider type are not allowed");
-    }
-  }
 
-  public Vector2 Size
-  {
-    get => new Vector2(Width, Height);
-  }
+    public abstract void DebugRender();
+    public abstract int Width { get; set; }
+    public abstract int Height { get; set; }
+    public abstract int Top { get; set; }
+    public abstract int Bottom { get; set; }
+    public abstract int Left { get; set; }
+    public abstract int Right { get; set; }
+    public abstract bool Collide(Box box);
+    public abstract bool Collide(TileCollider tileCollider);
+    public abstract bool Collide(Circle circle);
 
-  public Rectangle Bounds
-  {
-    get => new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
-  }
+    public bool Collide(Entity entity)
+    {
+        return Collide(entity.Collider);
+    }
+
+    public bool Collide(Collider collider)
+    {
+        if (collider is Box)
+        {
+            return Collide(collider as Box);
+        }
+        else if (collider is TileCollider)
+        {
+            return Collide(collider as TileCollider);
+        }
+        else if (collider is Circle)
+        {
+            return Collide(collider as Circle);
+        }
+        else
+        {
+            throw new System.Exception("Collisions against the collider type are not allowed");
+        }
+    }
+
+    public Vector2 Size
+    {
+        get => new Vector2(Width, Height);
+    }
+
+    public Rectangle Bounds
+    {
+        get => new Rectangle((int)Position.X, (int)Position.Y, Width, Height);
+    }
 }

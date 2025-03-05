@@ -100,4 +100,9 @@ public class TileCollider : Collider
     {
         throw new System.NotImplementedException();
     }
+
+    public override bool Collide(Circle other)
+    {
+        throw new System.NotImplementedException();
+    }
 }
